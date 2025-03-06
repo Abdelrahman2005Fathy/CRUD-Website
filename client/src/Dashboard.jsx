@@ -18,13 +18,16 @@ function Dashboard() {
   const [addSection, setAddSection] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", mobile: "" });
   const [dataList, setDataList] = useState([]);
- 
+  const [loading, setLoading] = useState(false);
 
-  
   useEffect(() => {
-    getFetchData(setDataList);
+    const fetchData = async () => {
+      setLoading(true);
+      await getFetchData(setDataList);
+      setLoading(false);
+    };
+    fetchData();
   }, []);
- 
 
   return (
     <div className="container">
@@ -51,8 +54,9 @@ function Dashboard() {
               name="name"
               value={formData.name}
               onChange={(e) =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
+                setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
               }
+              required
             />
             <label htmlFor="email">Email :</label>
             <input
@@ -61,8 +65,9 @@ function Dashboard() {
               name="email"
               value={formData.email}
               onChange={(e) =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
+                setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
               }
+              required
             />
             <label htmlFor="mobile">Mobile :</label>
             <input
@@ -71,8 +76,9 @@ function Dashboard() {
               name="mobile"
               value={formData.mobile}
               onChange={(e) =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
+                setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
               }
+              required
             />
 
             <button type="submit" className="btn">
@@ -93,7 +99,13 @@ function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {dataList.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="4" style={{ textAlign: "center", padding: "10px" }}>
+                  Loading...
+                </td>
+              </tr>
+            ) : dataList.length > 0 ? (
               dataList.map((item) => (
                 <tr key={item._id}>
                   <td>{item.name}</td>
@@ -103,7 +115,7 @@ function Dashboard() {
                     <button
                       className="btn btn-edit"
                       onClick={() => {
-                        setFormData({ ...item });
+                        setFormData(item);
                         setAddSection(true);
                       }}
                     >
@@ -111,9 +123,11 @@ function Dashboard() {
                     </button>
                     <button
                       className="btn btn-delete"
-                      onClick={() =>
-                        handleDelete(item._id, setDataList, dataList)
-                      }
+                      onClick={async () => {
+                        setLoading(true);
+                        await handleDelete(item._id, setDataList, dataList);
+                        setLoading(false);
+                      }}
                     >
                       Delete
                     </button>
@@ -122,17 +136,7 @@ function Dashboard() {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="4"
-                  style={{
-                    textAlign: "center",
-                    padding: "10px",
-                    fontSize: "20px",
-                    color: "#000",
-                    fontFamily: "satisfies",
-                    fontWeight: "bolder",
-                  }}
-                >
+                <td colSpan="4" style={{ textAlign: "center", padding: "10px" }}>
                   No data available. Please add some entries!
                 </td>
               </tr>

@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors")
 const mongoose = require("mongoose");
-
+const dotenv = require('dotenv'); 
+dotenv.config(); 
 
 const app = express();
 app.use(cors());
@@ -101,13 +102,15 @@ app.delete("/delete/:id", async (req,res) => {
 });
 
 
-mongoose.connect("mongodb+srv://bdalrhmnfthy000:gK7cwCgotozPfZUq@cluster0.fagof.mongodb.net/CRUD?retryWrites=true&w=majority&appName=Cluster0",{
-useNewUrlParser: true,
-useUnifiedTopology: true
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}/${process.env.DB_NAME}?retryWrites=true&w=majority`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 })
+
  .then(() => {
     console.log("Connected to MongoDB")
     app.listen(PORT, () => console.log("Server is Running..."))
  })
  .catch((err) => console.error("Error connecting to MongoDB:", err));
+
 

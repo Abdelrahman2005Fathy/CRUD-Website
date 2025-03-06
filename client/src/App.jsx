@@ -10,7 +10,7 @@ function App() {
   return (
 
       <Routes>
-        <Route path="/dashboard" element={<Dashboard/>}/>
+        <Route index element={<Dashboard/>}/>
       </Routes>
   );
 }
