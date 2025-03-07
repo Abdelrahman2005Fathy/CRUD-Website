@@ -8,7 +8,7 @@ const app = express();
 
 // تمكين CORS للطلبات من النطاق المحلي وVercel
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://crud-website-i6js.vercel.app'], // السماح بالطلبات من هذه النطاقات
+  origin: ['http://localhost:5173', 'https://crud-website-dusky.vercel.app/'], // السماح بالطلبات من هذه النطاقات
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // السماح بالطرق المختلفة
   allowedHeaders: ['Content-Type', 'Authorization'], // السماح بالرؤوس المطلوبة
   credentials: true, // في حالة وجود ملفات تعريف الارتباط (cookies)
