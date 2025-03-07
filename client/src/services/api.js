@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-axios.defaults.baseURL = "http://localhost:8080/";
+axios.defaults.baseURL = "https://crud-website-i6js.vercel.app/";
 
 // دالة لجلب البيانات
 export const getFetchData = async (setDataList) => {
