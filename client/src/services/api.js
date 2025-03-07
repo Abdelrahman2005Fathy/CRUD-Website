@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-axios.defaults.baseURL = "http://localhost:8080/";
+axios.defaults.baseURL = (`${import.meta.env.VITE_NEXT_APP_BASEURL}`)
 
 // دالة لجلب البيانات
 export const getFetchData = async (setDataList) => {

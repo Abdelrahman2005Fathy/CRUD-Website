@@ -1,116 +1,86 @@
 const express = require("express");
-const cors = require("cors")
+const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require('dotenv'); 
 dotenv.config(); 
 
 const app = express();
-app.use(cors());
+
+// تمكين CORS للطلبات من النطاق المحلي وVercel
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://crud-website-i6js.vercel.app'], // السماح بالطلبات من هذه النطاقات
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // السماح بالطرق المختلفة
+  allowedHeaders: ['Content-Type', 'Authorization'], // السماح بالرؤوس المطلوبة
+  credentials: true, // في حالة وجود ملفات تعريف الارتباط (cookies)
+}));
+
 app.use(express.json());
 const PORT = process.env.PORT || 8080;
 
-//Schema
-
+// Schema
 const schemaData = new mongoose.Schema({
-    name: String,
-    email: String,
-    mobile:String,
-},{ 
-    timestamps: true 
+  name: String,
+  email: String,
+  mobile: String,
+}, { timestamps: true });
+
+const userModel = mongoose.model("user", schemaData);
+
+// Routes
+app.get("/", async (req, res) => {
+  const data = await userModel.find({});
+  res.json({
+    success: true,
+    data: data,
+  });
 });
 
-const userModel = mongoose.model("user",schemaData);
+app.post("/create", async (req, res) => {
+  console.log(req.body);
+  const data = new userModel(req.body);
+  await data.save();
 
-// read
-//​http://localhost:8080/
-app.get("/",async (req ,res)=>{
-    const data = await userModel.find({});
-    res.json({
-        success: true,
-        data: data,
-    })
+  res.send({
+    message: "Data saved successfully!",
+    success: true,
+  });
 });
 
+app.put("/update/:id", async (req, res) => {
+  console.log(req.body);
+  const { id } = req.params;
+  const updateData = req.body;
 
-// create
- //​http://localhost:8080/create
- /*
- * Sample Request Body:
- * {
- *     "name",
- *     "email",
- *     "mobile"
- * }
- */ 
-app.post("/create", async (req,res) => {
-    console.log(req.body);
-    const data = new userModel(req.body);
-    await data.save();
-
+  try {
+    const data = await userModel.updateOne({ _id: id }, updateData);
     res.send({
-        message: "Data save Successfully!",
-        success: true,
-    })
+      message: "User updated successfully!",
+      success: true,
+      data: data,
+    });
+  } catch (error) {
+    res.status(500).send({ message: "Error updating user", success: false });
+  }
 });
 
-// update
- //​http://localhost:8080/update
- /*
- * Sample Request Body:
- * {
- *     "_id",
- *     "name",
- *     "email",
- *     "mobile"
- * }
- */
- app.put("/update/:id", async (req, res) => {
-    console.log(req.body);
-    const { id } = req.params; 
-    const updateData = req.body;
-    
-    try {
-        const data = await userModel.updateOne({ _id: id }, updateData);
-        res.send({
-            message: "User Updated Successfully!",
-            success: true,
-            data: data,
-        });
-    } catch (error) {
-        res.status(500).send({ message: "Error updating user", success: false });
-    }
+app.delete("/delete/:id", async (req, res) => {
+  console.log(req.body);
+  const id = req.params.id;
+  const data = await userModel.deleteOne({ _id: id });
+  res.send({
+    message: "User deleted successfully!",
+    success: true,
+    data: data,
+  });
 });
 
-
-// delete
- //​http://localhost:8080/delete/:id
- /*
- * Sample Request Body:
- * {
- *     "_id"
- * }
- */
-app.delete("/delete/:id", async (req,res) => {
-    console.log(req.body);
-    const id = req.params.id;
-    const data = await userModel.deleteOne({_id:id});
-    res.send({
-        message: "User Deleted Successfully!",
-        success: true,
-        data: data,
-    })
-});
-
-
+// MongoDB connection
 mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}/${process.env.DB_NAME}?retryWrites=true&w=majority`, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 })
-
- .then(() => {
-    console.log("Connected to MongoDB")
-    app.listen(PORT, () => console.log("Server is Running..."))
- })
- .catch((err) => console.error("Error connecting to MongoDB:", err));
-
-
+.then(() => {
+  console.log("Connected to MongoDB");
+  app.listen(PORT, () => console.log(`Server is running on port ${PORT}...`));
+})
+.catch((err) => console.error("Error connecting to MongoDB:", err));
