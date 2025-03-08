@@ -27,7 +27,7 @@ export const handleDelete = async (id, setDataList, dataList) => {
   try {
     const { data } = await axios.delete(`/delete/${id}`);
     if (data.success) {
-      toast.success("Data deleted successfully! 🗑️",{
+      toast.success("Data deleted successfully! 🗑️", {
         style: { backgroundColor: "red", color: "white" },
       });
       setDataList(prevList => prevList.filter(item => item._id !== id));
@@ -41,7 +41,6 @@ export const handleDelete = async (id, setDataList, dataList) => {
 // دالة لإضافة أو تحديث البيانات
 export const handleSubmit = async (e, formData, setFormData, setAddSection, getFetchData) => {
   e.preventDefault();
-
   if (!formData.name || !formData.email || !formData.mobile) {
     toast.error("Please fill in all fields! ⚠️");
     return;
@@ -58,7 +57,7 @@ export const handleSubmit = async (e, formData, setFormData, setAddSection, getF
       toast.success(formData._id ? "Data updated successfully! ✅" : "Data added successfully! ✅");
       setFormData({ name: "", email: "", mobile: "" });
       setAddSection(false);
-      getFetchData();
+      await getFetchData();
     }
   } catch (error) {
     toast.error("Error submitting ❌");
