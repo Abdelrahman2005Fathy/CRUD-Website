@@ -8,7 +8,7 @@ const app = express();
 
 // تمكين CORS للطلبات من النطاق المحلي وVercel
 app.use(cors({
-   origin: ['*'], // السماح بالطلبات من هذه النطاقات
+  origin: ['http://localhost:5173', 'https://crud-website-kh76.vercel.app/'], // السماح بالطلبات من هذه النطاقات
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // السماح بالطرق المختلفة
   allowedHeaders: ['Content-Type', 'Authorization'], // السماح بالرؤوس المطلوبة
   credentials: true, // في حالة وجود ملفات تعريف الارتباط (cookies)
@@ -75,10 +75,7 @@ app.delete("/delete/:id", async (req, res) => {
 });
 
 // MongoDB connection
-mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}/${process.env.DB_NAME}?retryWrites=true&w=majority`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}/${process.env.DB_NAME}?retryWrites=true&w=majority`)
 .then(() => {
   console.log("Connected to MongoDB");
   app.listen(PORT, () => console.log(`Server is running on port ${PORT}...`));
